@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Vina Full Debug</title>
+</head>
+
+<body style="background: #111; color: #0f0; font-family: monospace; padding: 2rem;">
+    <h2>Vina WASM Full Simulation Debug</h2>
+    <div id="status">Initializing...</div>
+    <pre id="logs" style="border: 1px solid #333; padding: 1rem; height: 500px; overflow: auto;"></pre>
+
+    <!-- Load the Classic script directly -->
+    <script src="webina/vina_classic.js"></script>
+
+    <script>
+        const logEl = document.getElementById('logs');
+        const statusEl = document.getElementById('status');
+
+        function log(msg) {
+            logEl.innerText += msg + "\n";
+            console.log(msg);
+        }
+
+        async function runTest() {
+            log("Checking for WEBINA_MODULE...");
+
+            if (typeof WEBINA_MODULE === 'undefined') {
+                log("ERROR: WEBINA_MODULE is undefined. Script did not load globally.");
+                return;
+            }
+
+            log("WEBINA_MODULE found. Initializing...");
+
+            try {
+                const mod = await WEBINA_MODULE({
+                    noInitialRun: true,
+                    // Force Single Thread
+                    PTHREAD_POOL_SIZE: 0,
+                    print: (text) => log("[STDOUT] " + text),
+                    printErr: (text) => log("[STDERR] " + text),
+                    locateFile: (path) => {
+                        log("Locating: " + path);
+                        if (path.endsWith('.wasm')) return '/webina/vina_classic.wasm';
+                        return '/webina/' + path;
+                    }
+                });
+
+                log("Module Initialized.");
+
+                // Mount Dummy Files
+                const FS = mod.FS;
+                log("Writing dummy input files...");
+                FS.writeFile('/rec.pdbqt', 'ATOM      1  N   MET A   1      27.243  18.673  10.224  1.00 48.91           N\nATOM      2  CA  MET A   1      28.218  18.502  11.396  1.00 48.06           C\n');
+                FS.writeFile('/lig.pdbqt', 'ROOT\nATOM      1  C   LIG d   1       0.000   0.000   0.000  1.00  0.00     0.025 C\nENDROOT\nTORSDOF 0\n');
+
+                log("Running Vina with real arguments...");
+
+                // Run Vina
+                mod.callMain([
+                    '--receptor', '/rec.pdbqt',
+                    '--ligand', '/lig.pdbqt',
+                    '--center_x', '0',
+                    '--center_y', '0',
+                    '--center_z', '0',
+                    '--size_x', '20',
+                    '--size_y', '20',
+                    '--size_z', '20',
+                    '--exhaustiveness', '1',
+                    '--cpu', '1',
+                    '--out', '/out.pdbqt'
+                ]);
+
+                log("Vina Completed.");
+
+                if (FS.analyzePath('/out.pdbqt').exists) {
+                    const out = FS.readFile('/out.pdbqt', { encoding: 'utf8' });
+                    log("SUCCESS! Output Content:\n" + out);
+                } else {
+                    log("FAILED: No output file generated.");
+                }
+
+                statusEl.innerText = "Complete";
+
+            } catch (err) {
+                log("CRASH: " + err);
+                statusEl.innerText = "Crashed";
+                console.error(err);
+            }
+        }
+
+        // Give the script a moment to parse
+        setTimeout(runTest, 1000);
+    </script>
+</body>
+
+</html>
