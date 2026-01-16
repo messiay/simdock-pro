@@ -19,41 +19,7 @@ import './App.css';
 function App() {
   const { activeTab, theme, setReceptorFile, setLigandFile, receptorFile, setParams } = useDockingStore();
 
-  // DEBUG: Auto-load example data for testing (ENABLED for debugging)
-  useEffect(() => {
-    const loadExampleData = async () => {
-      if (receptorFile) return;
-      try {
-        console.log("[AutoLoad] Fetching example data...");
-        const [rRes, lRes] = await Promise.all([
-          fetch('/examples/receptor.pdbqt'),
-          fetch('/examples/ligand.pdbqt')
-        ]);
-
-        if (rRes.ok && lRes.ok) {
-          const rText = await rRes.text();
-          const lText = await lRes.text();
-          setReceptorFile({ name: 'receptor.pdbqt', content: rText, format: 'pdbqt' });
-          setLigandFile({ name: 'ligand.pdbqt', content: lText, format: 'pdbqt' });
-
-          // Calculate valid grid box for the loaded receptor (blind docking default)
-          const box = calculateBlindDockingBox(rText);
-          setParams({
-            ...box,
-            exhaustiveness: 8,
-            cpus: 4
-          });
-
-          console.log("[AutoLoad] Example data and PARAMS loaded into store.");
-        } else {
-          console.error("[AutoLoad] Failed to fetch examples", rRes.status, lRes.status);
-        }
-      } catch (e) {
-        console.error("[AutoLoad] Error loading examples:", e);
-      }
-    };
-    loadExampleData();
-  }, []);
+  // Example auto-load removed as per user request
 
   // Sync theme to body class for global CSS variables
   useEffect(() => {

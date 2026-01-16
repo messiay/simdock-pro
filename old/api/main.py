@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 from pathlib import Path
-from api.routes import projects, docking, analysis, system
+from api.routes import projects, docking, analysis, system, conversion, fetch
 from core.project_manager import ProjectManager
 
 app = FastAPI(
@@ -30,6 +30,8 @@ app.include_router(projects.router, prefix="/projects", tags=["Projects"])
 app.include_router(docking.router, prefix="/docking", tags=["Docking"])
 app.include_router(analysis.router, prefix="/analysis", tags=["Analysis"])
 app.include_router(system.router, prefix="/system", tags=["System"])
+app.include_router(conversion.router, prefix="/convert", tags=["Conversion"])
+app.include_router(fetch.router, prefix="/fetch", tags=["Fetch"])
 
 @app.get("/")
 def read_root():

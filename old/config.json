@@ -10,7 +10,7 @@
     },
     "platform_settings": {
         "windows": {
-            "obabel": "obabel",
+            "obabel": "C:\\Users\\user\\Miniconda3\\Library\\bin\\obabel.exe",
             "vina": "vina",
             "autodock_gpu": "vina_gpu.exe",
             "chimerax": "C:\\Program Files\\ChimeraX 1.10.1\\bin\\ChimeraX.exe",

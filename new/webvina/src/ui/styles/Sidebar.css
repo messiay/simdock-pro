@@ -1,19 +1,26 @@
 .sidebar {
-    width: 260px;
-    /* Standard macOS sidebar width */
-    min-width: 260px;
+    /* Collapsed state by default */
+    width: 70px;
+    min-width: 70px;
     background: var(--bg-surface);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
     border-right: 1px solid var(--glass-border);
-    /* Floating Sidebar Look? Or Full Height? Full height is standard for apps */
     height: 100vh;
     color: var(--text-primary);
     display: flex;
     flex-direction: column;
     box-shadow: 1px 0 0 rgba(0, 0, 0, 0.05);
-    /* Very subtle separator */
     z-index: 50;
+    overflow: hidden;
+    /* Hide overflowing text when collapsed */
+    transition: width 0.25s ease-in-out, min-width 0.25s ease-in-out;
+}
+
+.sidebar:hover {
+    /* Expanded state on hover */
+    width: 260px;
+    min-width: 260px;
 }
 
 .sidebar-header {
@@ -29,6 +36,7 @@
     font-size: 1.6rem;
     font-weight: 800;
     letter-spacing: -0.5px;
+    white-space: nowrap;
 }
 
 .logo-icon {
@@ -55,6 +63,36 @@
     font-size: 0.8rem;
     color: var(--text-secondary);
     font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    /* Hidden when collapsed */
+    transition: opacity 0.2s ease-in-out;
+}
+
+.sidebar:hover .app-subtitle {
+    opacity: 1;
+    /* Show on expand */
+}
+
+/* Text labels hidden when collapsed */
+.logo-text,
+.tab-label,
+.footer-info,
+.start-over-btn span
+
+/* Assuming text is in span, may need adjustment */
+    {
+    opacity: 0;
+    white-space: nowrap;
+    transition: opacity 0.2s ease-in-out 0.05s;
+    /* Slight delay for smoothness */
+}
+
+.sidebar:hover .logo-text,
+.sidebar:hover .tab-label,
+.sidebar:hover .footer-info,
+.sidebar:hover .start-over-btn {
+    opacity: 1;
 }
 
 .sidebar-nav {
@@ -136,13 +174,24 @@
 }
 
 .sidebar-footer {
-    padding: 24px;
+    padding: 16px;
+    /* Reduce padding for collapsed state */
     border-top: 1px solid var(--glass-border);
     background: var(--glass-thin);
     border-radius: 0 0 24px 24px;
 }
 
+.sidebar:hover .sidebar-footer {
+    padding: 24px;
+    /* Full padding on expand */
+}
+
+/* Start Over Button */
 .start-over-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     width: 100%;
     padding: 14px;
     background: rgba(255, 107, 107, 0.15);

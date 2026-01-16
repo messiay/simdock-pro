@@ -151,8 +151,7 @@ export const useDockingStore = create<DockingStore>()(
             setViewMode: (mode) => set({ viewMode: mode }),
             triggerResetView: () => set((state) => ({ resetViewTrigger: state.resetViewTrigger + 1 })),
 
-            // Theme State
-            theme: 'dark',
+            // Theme State\n            theme: 'light',
             toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
         }),
         {

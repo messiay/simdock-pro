@@ -1,10 +1,9 @@
 import { useState, useRef } from 'react';
-import { rdkitService, type MolecularProperties } from '../../services/rdkitService';
-import { openBabelService, INPUT_FORMATS, OUTPUT_FORMATS, type SupportedInputFormat, type SupportedOutputFormat } from '../../services/openBabelService';
-import { pdbService } from '../../services/pdbService';
-import { pubchemService, type CompoundInfo } from '../../services/pubchemService';
+import { apiService } from '../../services/apiService';
+import { INPUT_FORMATS, OUTPUT_FORMATS, type SupportedInputFormat, type SupportedOutputFormat } from '../../services/openBabelService';
 import { MolecularPropertiesDisplay } from './MolecularProperties';
 import { useDockingStore } from '../../store/dockingStore';
+import type { MolecularProperties } from '../../services/rdkitService';
 import {
     TestTube2,
     Dna,
@@ -88,7 +87,7 @@ export function PrepPanel() {
     // Services are initialized lazily when needed using init-on-demand patterns.
     // No useEffect() is used here to prevent startup blocks.
 
-    // PDB Import Handler
+    // PDB Import Handler - Now uses backend API
     const handleFetchPDB = async () => {
         if (!pdbInput.trim()) {
             setPdbError('Please enter a PDB ID');
@@ -99,12 +98,11 @@ export function PrepPanel() {
         setPdbError(null);
         setPdbResult(null);
 
-        const result = await pdbService.fetchPDB(pdbInput.trim());
-
-        if (result.success && result.content) {
-            setPdbResult({ title: result.title || (result as any).pdbId || 'Unknown', content: result.content });
-        } else {
-            setPdbError(result.error || 'Failed to fetch PDB');
+        try {
+            const result = await apiService.fetchPdb(pdbInput.trim());
+            setPdbResult({ title: result.title || pdbInput.toUpperCase(), content: result.pdb_content });
+        } catch (err: any) {
+            setPdbError(err.message || 'Failed to fetch PDB');
         }
 
         setIsFetchingPdb(false);
@@ -120,7 +118,7 @@ export function PrepPanel() {
         setActiveTab('input');
     };
 
-    // PubChem Import Handler
+    // PubChem Import Handler - Now uses backend API
     const handleFetchPubChem = async () => {
         if (!pubchemInput.trim()) {
             setPubchemError('Please enter a CID or compound name');
@@ -131,17 +129,15 @@ export function PrepPanel() {
         setPubchemError(null);
         setPubchemResult(null);
 
-        const result = await pubchemService.fetchCompound(pubchemInput.trim());
-
-        if (result.success && result.content) {
+        try {
+            const result = await apiService.fetchPubChem(pubchemInput.trim());
             setPubchemResult({
-                name: result.name || `CID ${result.cid}`,
-                content: result.content,
-                format: 'sdf',
-                properties: result.properties,
+                name: result.name || pubchemInput,
+                content: result.pdbqt_content || result.sdf_content,
+                format: result.pdbqt_content ? 'pdbqt' : 'sdf',
             });
-        } else {
-            setPubchemError(result.error || 'Failed to fetch compound');
+        } catch (err: any) {
+            setPubchemError(err.message || 'Failed to fetch compound');
         }
 
         setIsFetchingPubchem(false);
@@ -150,36 +146,16 @@ export function PrepPanel() {
     const handleUsePubchemAsLigand = async () => {
         if (!pubchemResult) return;
 
-        // Use lightweight JS converter purely for speed (User Request: Revert to when it was fast)
-        setIsFetchingPubchem(true);
-
-        // Instant yield to show spinner
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        try {
-            console.info('[PrepPanel] Using Fast SDF Converter (JS)');
-            const { sdfToPdbqt } = await import('../../utils/sdfConverter');
-            const pdbqtContent = sdfToPdbqt(pubchemResult.content);
-
-            if (pdbqtContent) {
-                setLigandFile({
-                    name: `${pubchemResult.name.replace(/\s+/g, '_')}.pdbqt`,
-                    content: pdbqtContent,
-                    format: 'pdbqt',
-                });
-            } else {
-                console.error("SDF conversion returned null");
-            }
-
-        } catch (e) {
-            console.error('[PrepPanel] Conversion error', e);
-        }
-
-        setIsFetchingPubchem(false);
+        // Backend already converted to PDBQT if possible
+        setLigandFile({
+            name: `${pubchemResult.name.replace(/\s+/g, '_')}.pdbqt`,
+            content: pubchemResult.content,
+            format: pubchemResult.format as 'pdbqt' | 'sdf',
+        });
         setActiveTab('input');
     };
 
-    // SMILES Processing
+    // SMILES Processing - Now uses backend API
     const handleProcessSMILES = async () => {
         if (!smilesInput.trim()) {
             setError('Please enter a SMILES string');
@@ -192,25 +168,14 @@ export function PrepPanel() {
         setProperties(null);
         setProcessedData(null);
 
-        // Yield for UI update
-        await new Promise(resolve => setTimeout(resolve, 100));
-
         try {
-            const result = await rdkitService.processSMILES(smilesInput.trim());
-
-            if (!result.success) {
-                setError(result.error || 'Failed to process SMILES');
-                return;
-            }
-
-            setSvgDepiction(result.svg || null);
-            setProperties(result.properties || null);
+            const pdbqtContent = await apiService.convertSmilesToPdbqt(smilesInput.trim(), 'smiles_ligand');
             setProcessedData({
-                canonicalSmiles: result.canonicalSmiles,
-                pdbBlock: result.pdbBlock,
+                canonicalSmiles: smilesInput.trim(),
+                pdbBlock: pdbqtContent,
             });
-        } catch (err) {
-            setError(`Processing error: ${err}`);
+        } catch (err: any) {
+            setError(`Processing error: ${err.message}`);
         } finally {
             setIsProcessing(false);
         }
@@ -243,9 +208,10 @@ export function PrepPanel() {
         const content = await file.text();
         setConversionFileContent(content);
 
-        const detectedFormat = openBabelService.detectFormat(file.name, content);
-        if (detectedFormat) {
-            setInputFormat(detectedFormat);
+        // Simple format detection from extension
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (ext && ['pdb', 'sdf', 'mol', 'mol2', 'xyz'].includes(ext)) {
+            setInputFormat(ext as SupportedInputFormat);
         }
     };
 
@@ -260,19 +226,19 @@ export function PrepPanel() {
         setConversionResult(null);
 
         try {
-            const result = await openBabelService.convert(
-                conversionFileContent,
-                inputFormat,
-                outputFormat
-            );
+            let pdbqtContent: string;
 
-            if (result.success && result.output) {
-                setConversionResult(result.output);
+            if (inputFormat === 'pdb') {
+                pdbqtContent = await apiService.convertPdbToPdbqt(conversionFileContent);
+            } else if (inputFormat === 'sdf' || inputFormat === 'mol') {
+                pdbqtContent = await apiService.convertSdfToPdbqt(conversionFileContent);
             } else {
-                setConversionError(result.error || 'Conversion failed');
+                throw new Error(`Conversion from ${inputFormat} not supported via backend yet`);
             }
-        } catch (err) {
-            setConversionError(`Conversion error: ${err}`);
+
+            setConversionResult(pdbqtContent);
+        } catch (err: any) {
+            setConversionError(`Conversion error: ${err.message}`);
         } finally {
             setIsConverting(false);
         }

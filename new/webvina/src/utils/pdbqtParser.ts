@@ -139,63 +139,87 @@ export function pdbToPdbqt(pdbContent: string): string {
     };
 
     for (const line of lines) {
-        if (line.startsWith('ATOM') || line.startsWith('HETATM')) {
-            // Extract atom info (fixed width PDB columns)
-            // 0-6: Record name
-            // 6-11: Serial
-            // 12-16: Atom name
-            // 17-20: Residue name
-            // ...
+        // Skip empty or very short lines
+        if (line.length < 54) continue;
+
+        // For receptors, only keep standard amino acids (ATOM records)
+        // Skip HETATM entirely - these include ligands, nucleotides, etc. that cause Vina issues
+        if (line.startsWith('HETATM')) continue;
+
+        if (line.startsWith('ATOM')) {
             const atomName = line.substring(12, 16).trim();
             const resName = line.substring(17, 20).trim();
 
+            // Skip hydrogen atoms
+            if (atomName.startsWith('H') || atomName.match(/^\d*H/)) continue;
+
+            // Only keep standard amino acids
+            const standardAminoAcids = [
+                'ALA', 'ARG', 'ASN', 'ASP', 'CYS', 'GLN', 'GLU', 'GLY', 'HIS', 'ILE',
+                'LEU', 'LYS', 'MET', 'PHE', 'PRO', 'SER', 'THR', 'TRP', 'TYR', 'VAL',
+                'HID', 'HIE', 'HIP', 'CYX', 'ASH', 'GLH', 'LYN' // Modified residues
+            ];
+            if (!standardAminoAcids.includes(resName.toUpperCase())) continue;
+
+            // Extract and validate coordinates
+            const xStr = line.substring(30, 38).trim();
+            const yStr = line.substring(38, 46).trim();
+            const zStr = line.substring(46, 54).trim();
+
+            const x = parseFloat(xStr);
+            const y = parseFloat(yStr);
+            const z = parseFloat(zStr);
+
+            // Skip if coordinates are not valid numbers
+            if (isNaN(x) || isNaN(y) || isNaN(z)) continue;
+
             const vinaAtomType = getAtomType(resName, atomName);
 
-            // Reconstruct line with PDBQT format
-            // We reuse coordinates and names from PDB, but enforce column widths
+            // Extract other fields safely
             const recordName = line.substring(0, 6);
             const serial = line.substring(6, 11);
             const name = line.substring(12, 16);
-            const altLoc = line.substring(16, 17);
+            const altLoc = line.length > 16 ? line.substring(16, 17) : ' ';
             const res = line.substring(17, 20);
-            const chain = line.substring(21, 22);
+            const chain = line.length > 21 ? line.substring(21, 22) : ' ';
             const resSeq = line.substring(22, 26);
-            const insCode = line.substring(26, 27);
-            const x = line.substring(30, 38);
-            const y = line.substring(38, 46);
-            const z = line.substring(46, 54);
-            // PDBQT: Charge (71-76) and Type (78-79)
-            // " 0.000 " is charge (6 chars + spaces)
+            const insCode = line.length > 26 ? line.substring(26, 27) : ' ';
 
-            // Construct padded line
-            // ATOM   2615  N   ILE A 344      36.756 -10.435  10.428  1.00  0.00     0.000 N 
+            // Construct PDBQT line with proper formatting
+            // Format: ATOM  serial name altLoc res chain resSeq insCode    x       y       z     occ  temp    charge type
             const pdbqtLine =
                 recordName.padEnd(6) +
-                serial.padEnd(5) + ' ' +
+                serial.padStart(5) + ' ' +
                 name.padEnd(4) +
                 altLoc +
                 res.padEnd(3) + ' ' +
                 chain +
-                resSeq.padEnd(4) +
+                resSeq.padStart(4) +
                 insCode + '   ' +
-                x.padEnd(8) +
-                y.padEnd(8) +
-                z.padEnd(8) +
-                '  1.00' + // Occupancy (fixed)
-                '  0.00' + // Temp factor (fixed)
+                xStr.padStart(8) +
+                yStr.padStart(8) +
+                zStr.padStart(8) +
+                '  1.00' +
+                '  0.00' +
                 '    ' +
-                ' 0.000' + // Partial charge
+                ' 0.000' +
                 ' ' +
                 vinaAtomType.padEnd(2);
 
             outputLines.push(pdbqtLine);
 
-        } else if (line.startsWith('TER') || line.startsWith('END')) {
-            outputLines.push(line);
         }
+        // Skip TER, END, and all other record types during the loop
     }
 
-    return outputLines.join('\n');
+    // Add final TER and END (matching working example format)
+    if (outputLines.length > 0) {
+        outputLines.push('TER');
+        outputLines.push('END');
+    }
+
+    // Use CRLF for Windows compatibility with Vina
+    return outputLines.join('\r\n') + '\r\n';
 }
 
 /**

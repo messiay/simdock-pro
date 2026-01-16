@@ -4,8 +4,9 @@ import { ReceptorUpload, LigandUpload, CorrectPoseUpload } from './FileUpload';
 import { DockingBoxPanel } from './DockingBoxPanel';
 import { VinaOptionsPanel } from './VinaOptionsPanel';
 import { vinaService } from '../../services/vinaService';
+import { apiService } from '../../services/apiService';
 import { calculateGridboxFromReceptor } from '../../utils/gridboxCalculator';
-import { pdbToPdbqt, isValidPdbqt } from '../../utils/pdbqtParser';
+import { isValidPdbqt } from '../../utils/pdbqtParser';
 import { Crosshair, AlertTriangle, PlayCircle } from 'lucide-react';
 import '../styles/InputPanel.css';
 
@@ -65,26 +66,35 @@ export function InputPanel() {
             let receptorPdbqt = receptorFile.content;
             let ligandPdbqt = ligandFile.content;
 
-            // Convert PDB to PDBQT if needed
+            // Convert PDB to PDBQT via backend API
             if (receptorFile.format === 'pdb' && !isValidPdbqt(receptorPdbqt)) {
-                addConsoleOutput('Converting receptor to PDBQT format...');
-                receptorPdbqt = pdbToPdbqt(receptorPdbqt);
+                addConsoleOutput('Converting receptor to PDBQT via API...');
+                try {
+                    receptorPdbqt = await apiService.convertPdbToPdbqt(receptorPdbqt);
+                    addConsoleOutput('Receptor conversion successful.');
+                } catch (convErr: any) {
+                    addConsoleOutput(`ERROR: Receptor conversion failed: ${convErr.message}`);
+                    throw new Error(`Receptor conversion failed: ${convErr.message}`);
+                }
             }
 
-            // For SDF format, convert to PDBQT before sending to worker
+            // Convert SDF/MOL to PDBQT via backend API
             if (ligandFile.format === 'sdf' || ligandPdbqt.includes('V2000') || ligandPdbqt.includes('$$$$') || ligandPdbqt.includes('M  END')) {
-                addConsoleOutput('Converting ligand SDF to PDBQT format...');
-                const { sdfToPdbqt } = await import('../../utils/sdfConverter');
-                const converted = sdfToPdbqt(ligandPdbqt);
-                if (converted && (converted.includes('HETATM') || converted.includes('ATOM'))) {
-                    ligandPdbqt = converted;
-                    addConsoleOutput('SDF→PDBQT conversion successful!');
-                } else {
-                    addConsoleOutput('Warning: SDF conversion may have issues, proceeding anyway...');
+                addConsoleOutput('Converting ligand SDF to PDBQT via API...');
+                try {
+                    ligandPdbqt = await apiService.convertSdfToPdbqt(ligandPdbqt);
+                    addConsoleOutput('Ligand conversion successful.');
+                } catch (convErr: any) {
+                    addConsoleOutput(`Warning: SDF conversion failed: ${convErr.message}`);
                 }
             } else if (ligandFile.format === 'pdb' && !isValidPdbqt(ligandPdbqt)) {
-                addConsoleOutput('Converting ligand PDB to PDBQT format...');
-                ligandPdbqt = pdbToPdbqt(ligandPdbqt);
+                addConsoleOutput('Converting ligand PDB to PDBQT via API...');
+                try {
+                    ligandPdbqt = await apiService.convertPdbToPdbqt(ligandPdbqt);
+                    addConsoleOutput('Ligand conversion successful.');
+                } catch (convErr: any) {
+                    addConsoleOutput(`Warning: PDB conversion failed: ${convErr.message}`);
+                }
             }
 
             // Final validation - ensure we have content

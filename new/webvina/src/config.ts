@@ -4,6 +4,8 @@ export const config = {
         PROJECTS: '/projects',
         DOCKING: '/docking',
         ANALYSIS: '/analysis',
-        SYSTEM: '/system'
+        SYSTEM: '/system',
+        FETCH: '/fetch',
+        CONVERT: '/convert'
     }
 };

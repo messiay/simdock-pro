@@ -70,22 +70,104 @@ export const apiService = {
     },
 
     getDownloadUrl(relativePath: string) {
-        // Cleaning the path to ensure it maps correctly to static mount
-        // Backend mounts 'SimDock_Projects' at '/files'
-        // relativePath usually comes as full absolute path or relative from project root
-        // We need to extract the project-relative part. 
-        // A simple heuristic if the path is absolute: find 'SimDock_Projects' and take substring
-
-        // However, backend usually returns absolute path.
-        // Let's assume standard structure: .../SimDock_Projects/ProjectName/results/file.pdbqt
-
         const key = 'SimDock_Projects';
         if (relativePath.includes(key)) {
             const part = relativePath.split(key)[1];
-            // Normalize slashes
             const cleanPart = part.replace(/\\/g, '/');
             return `${config.API_BASE_URL}/files${cleanPart}`;
         }
-        return relativePath; // Fallback
+        return relativePath;
+    },
+
+    /**
+     * Convert PDB to PDBQT using OpenBabel on the backend.
+     */
+    async convertPdbToPdbqt(pdbContent: string, addHydrogens: boolean = true): Promise<string> {
+        const response = await fetch(`${config.API_BASE_URL}/convert/pdb-to-pdbqt`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                pdb_content: pdbContent,
+                add_hydrogens: addHydrogens
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'PDB to PDBQT conversion failed');
+        }
+
+        const result = await response.json();
+        return result.pdbqt_content;
+    },
+
+    /**
+     * Convert SDF/MOL to PDBQT using OpenBabel on the backend.
+     */
+    async convertSdfToPdbqt(sdfContent: string, addHydrogens: boolean = true): Promise<string> {
+        const response = await fetch(`${config.API_BASE_URL}/convert/sdf-to-pdbqt`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                sdf_content: sdfContent,
+                add_hydrogens: addHydrogens
+            })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'SDF to PDBQT conversion failed');
+        }
+
+        const result = await response.json();
+        return result.pdbqt_content;
+    },
+
+    /**
+     * Convert SMILES to 3D PDBQT using OpenBabel on the backend.
+     */
+    async convertSmilesToPdbqt(smiles: string, name: string = 'ligand'): Promise<string> {
+        const response = await fetch(`${config.API_BASE_URL}/convert/smiles-to-pdbqt`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ smiles, name })
+        });
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || 'SMILES to PDBQT conversion failed');
+        }
+
+        const result = await response.json();
+        return result.pdbqt_content;
+    },
+
+    /**
+     * Fetch PDB from RCSB via backend.
+     */
+    async fetchPdb(pdbId: string): Promise<{ pdb_content: string; title: string }> {
+        const response = await fetch(`${config.API_BASE_URL}/fetch/pdb/${pdbId}`);
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || `Failed to fetch PDB ${pdbId}`);
+        }
+
+        return response.json();
+    },
+
+    /**
+     * Fetch compound from PubChem via backend.
+     * Returns both SDF and PDBQT (if conversion succeeded).
+     */
+    async fetchPubChem(query: string): Promise<{ sdf_content: string; pdbqt_content: string; name: string }> {
+        const response = await fetch(`${config.API_BASE_URL}/fetch/pubchem/${encodeURIComponent(query)}?convert_to_pdbqt=true`);
+
+        if (!response.ok) {
+            const err = await response.json();
+            throw new Error(err.detail || `Failed to fetch compound ${query}`);
+        }
+
+        return response.json();
     }
 };
