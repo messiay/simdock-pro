@@ -22,16 +22,12 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-        cache-dependency-path: webvina/package-lock.json
 
     - name: Install Dependencies
-      working-directory: ./webvina
       run: npm ci
 
     - name: Lint
-      working-directory: ./webvina
       run: npm run lint
 
     - name: Build
-      working-directory: ./webvina
       run: npm run build

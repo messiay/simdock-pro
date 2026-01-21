@@ -34,23 +34,21 @@ npm run preview
 
 The production files will be in the `dist/` folder.
 
-## Server Requirements
+## Backend API Configuration
 
-SimDock uses WebAssembly with SharedArrayBuffer, which requires specific HTTP headers:
+SimDock connects to a FastAPI backend for docking computations. Configure the API endpoint in your environment:
 
+```bash
+# .env file
+VITE_API_URL=https://your-api-endpoint.com
 ```
-Cross-Origin-Embedder-Policy: require-corp
-Cross-Origin-Opener-Policy: same-origin
-```
-
-The development server (`npm run dev`) and the included `server.js` already set these headers.
 
 ## Troubleshooting
 
-### WASM Won't Load
-- Ensure you're using a modern browser (Chrome 89+, Firefox 79+, Edge 89+)
-- Check that the server is sending the correct COOP/COEP headers
-- Try clearing browser cache and reloading
+### API Connection Issues
+- Verify the API endpoint is accessible
+- Check that CORS is properly configured on the backend
+- Ensure your network allows outbound connections to the API
 
 ### Build Errors
 ```bash
