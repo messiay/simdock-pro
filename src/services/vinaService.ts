@@ -103,12 +103,15 @@ class VinaService {
         const outputPdbqt = await resp.text();
 
         // 6. Map to DockingResult
-        const poses = (resultData.scores || []).map((score: any) => ({
+        // Parse the multi-model PDBQT to extract individual poses
+        const modelBlocks = outputPdbqt.split("MODEL").slice(1).map(block => "MODEL" + block.split("ENDMDL")[0] + "ENDMDL");
+
+        const poses = (resultData.scores || []).map((score: any, index: number) => ({
             mode: score.Mode,
             affinity: score['Affinity (kcal/mol)'],
             rmsdLB: score['RMSD L.B.'],
             rmsdUB: score['RMSD U.B.'],
-            pdbqt: '' // Populated on demand
+            pdbqt: modelBlocks[index] || '' // Assign the corresponding PDBQT block
         }));
 
         store.addConsoleOutput(`[API] Received ${poses.length} poses.`);

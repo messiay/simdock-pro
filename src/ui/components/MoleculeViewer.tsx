@@ -193,7 +193,6 @@ export function MoleculeViewer() {
                 // Smart format detection
                 let format = 'pdb'; // Default
                 const contentLower = ligandContent.toLowerCase();
-                const hasModelTags = ligandContent.includes('MODEL') && ligandContent.includes('ENDMDL');
                 const isSDF = contentLower.includes('m  end') ||
                     contentLower.includes('$$$$') ||
                     contentLower.includes('v2000') ||
@@ -201,8 +200,7 @@ export function MoleculeViewer() {
                 const hasPdbAtoms = ligandContent.includes('ATOM') || ligandContent.includes('HETATM');
 
                 if (isSDF && !hasPdbAtoms) format = 'sdf';
-                else if (hasModelTags || hasPdbAtoms) format = 'pdb';
-                else if (ligandFile?.format && ligandFile.format !== 'pdbqt') format = ligandFile.format;
+                else format = 'pdb'; // Force PDB for PDBQT content as 3Dmol handles it better
 
                 const ligandModel = viewer.addModel(ligandContent, format);
 

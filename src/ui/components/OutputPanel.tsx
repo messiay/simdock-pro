@@ -65,7 +65,8 @@ export function OutputPanel() {
                             <tr>
                                 <th>Mode</th>
                                 <th>Affinity</th>
-                                <th>RMSD</th>
+                                <th>RMSD l.b.</th>
+                                <th>RMSD u.b.</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -83,7 +84,10 @@ export function OutputPanel() {
                                         {pose.affinity.toFixed(1)}
                                     </td>
                                     <td className="rmsd-col">
-                                        {pose.rmsdLB.toFixed(1)} / {pose.rmsdUB.toFixed(1)}
+                                        {pose.rmsdLB.toFixed(1)}
+                                    </td>
+                                    <td className="rmsd-col">
+                                        {pose.rmsdUB.toFixed(1)}
                                     </td>
                                 </tr>
                             ))}

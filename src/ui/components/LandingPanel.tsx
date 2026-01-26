@@ -55,7 +55,6 @@ export function LandingPanel() {
 
                 {/* Footer */}
                 <div className="landing-footer">
-                    <p><Sparkles size={14} style={{ display: 'inline', verticalAlign: 'middle' }} /> Powered by AutoDock Vina (WebAssembly)</p>
                     <span className="version">v3.1.0</span>
                 </div>
 

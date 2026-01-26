@@ -2,14 +2,12 @@ import { useState } from 'react';
 import { useDockingStore } from '../../store/dockingStore';
 import { useUserStore } from '../../store/userStore';
 import { projectService } from '../../services/projectService';
-import { ViewSettingsPanel } from './ViewSettingsPanel';
-import { Dna, Network, Layers, RotateCcw, BoxSelect, Save } from 'lucide-react';
+import { Dna, Network, RotateCcw, BoxSelect, Save } from 'lucide-react';
 import '../styles/FloatingToolbar.css';
 
 export function FloatingToolbar() {
     const { viewMode, setViewMode, triggerResetView, receptorFile, ligandFile, params, result } = useDockingStore();
     const { currentUser } = useUserStore();
-    const [showSettings, setShowSettings] = useState(false);
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [missionName, setMissionName] = useState('');
 
@@ -53,8 +51,6 @@ export function FloatingToolbar() {
 
     return (
         <>
-            {showSettings && <ViewSettingsPanel />}
-
             {showSaveModal && (
                 <div className="save-modal-overlay">
                     <div className="save-modal">
@@ -114,14 +110,6 @@ export function FloatingToolbar() {
                         <span className="label">Save</span>
                     </button>
 
-                    <button
-                        className={`tool-btn ${showSettings ? 'active' : ''}`}
-                        onClick={() => setShowSettings(!showSettings)}
-                        title="View Settings & Layers"
-                    >
-                        <span className="icon"><Layers size={18} /></span>
-                        <span className="label">Layers</span>
-                    </button>
 
                     <button
                         className="tool-btn"
