@@ -19,6 +19,7 @@ export interface DockingParams {
     localOnly: boolean;
     scoreOnly: boolean;
     randomizeInput: boolean;
+    dockingEngine?: 'vina' | 'smina';
 }
 
 // Docking result pose

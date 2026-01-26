@@ -46,11 +46,12 @@ class VinaService {
         await apiService.uploadFile(projectName, ligandFile, 'ligand');
 
         // 3. Submit Job
-        store.addConsoleOutput(`[API] Submitting docking job (Vina)...`);
+        const engineName = params.dockingEngine || 'vina';
+        store.addConsoleOutput(`[API] Submitting docking job (${engineName})...`);
         onProgress?.("Submitting job to backend...", 20);
 
         const job = await apiService.submitJob(projectName, {
-            engine: 'vina', // Hardcoded as per restriction
+            engine: params.dockingEngine || 'vina', // Use selected engine (vina/smina)
             receptor_file: 'receptor.pdbqt',
             ligand_file: 'ligand.pdbqt',
             config: {

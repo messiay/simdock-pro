@@ -1,5 +1,5 @@
 import { useDockingStore } from '../../store/dockingStore';
-import { Atom, Layers, ArrowRight, TestTube2, Sparkles } from 'lucide-react';
+import { Atom, ArrowRight, TestTube2, Layers } from 'lucide-react';
 import '../styles/LandingPanel.css';
 
 export function LandingPanel() {

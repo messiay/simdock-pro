@@ -5,6 +5,7 @@ import { pdbService } from '../../services/pdbService';
 import { pubchemService } from '../../services/pubchemService';
 import { sdfToPdbqt } from '../../utils/sdfConverter';
 import type { DockingResult } from '../../core/types';
+import { apiService } from '../../services/apiService';
 import { Layers, TestTube2, Play, Download, XCircle, CheckCircle, Loader2, AlertTriangle, FileText, Upload, Plus, Trash2, ChevronRight, ChevronDown, Settings } from 'lucide-react';
 import { DockingBoxPanel } from './DockingBoxPanel';
 import { VinaOptionsPanel } from './VinaOptionsPanel';
@@ -31,7 +32,7 @@ interface BatchJob {
 }
 
 export function BatchPanel() {
-    const { params, setReceptorFile, setLigandFile, setResult, setSelectedPose, selectedPose, result } = useDockingStore();
+    const { params, setReceptorFile, setLigandFile, setResult, setSelectedPose, selectedPose, result, dockingEngine } = useDockingStore();
     const [showParams, setShowParams] = useState(false);
     const [useAutoGrid, setUseAutoGrid] = useState(true); // Default to true for safety
 
@@ -83,10 +84,19 @@ export function BatchPanel() {
             const newMols: BatchMolecule[] = [];
 
             for (const file of files) {
-                const text = await file.text();
+                let text = await file.text();
+                // [FIX] Auto-convert PDB to PDBQT
+                if (file.name.toLowerCase().endsWith('.pdb')) {
+                    try {
+                        text = await apiService.convertPdbToPdbqt(text);
+                    } catch (err) {
+                        console.error(`Failed to convert ${file.name}`, err);
+                        // Fallback: keep text (might fail in Vina, but user sees it)
+                    }
+                }
                 newMols.push({
                     id: `rec-upload-${Date.now()}-${file.name}`,
-                    name: file.name,
+                    name: file.name.replace(/\.pdb$/i, '.pdbqt'),
                     content: text,
                     source: 'upload'
                 });
@@ -101,10 +111,22 @@ export function BatchPanel() {
             const newMols: BatchMolecule[] = [];
 
             for (const file of files) {
-                const text = await file.text();
+                let text = await file.text();
+                let name = file.name;
+
+                // [FIX] Auto-convert SDF/MOL to PDBQT
+                if (name.toLowerCase().endsWith('.sdf') || name.toLowerCase().endsWith('.mol')) {
+                    try {
+                        text = await apiService.convertSdfToPdbqt(text);
+                        name = name.replace(/\.(sdf|mol)$/i, '.pdbqt');
+                    } catch (err) {
+                        console.error(`Failed to convert ${file.name}`, err);
+                    }
+                }
+
                 newMols.push({
                     id: `lig-upload-${Date.now()}-${file.name}`,
-                    name: file.name,
+                    name: name,
                     content: text,
                     source: 'upload'
                 });
@@ -128,10 +150,18 @@ export function BatchPanel() {
             try {
                 const result = await pdbService.fetchPDB(id);
                 if (result.success && result.content) {
+                    // [FIX] Convert fetched PDB to PDBQT
+                    let pdbqt = result.content;
+                    try {
+                        pdbqt = await apiService.convertPdbToPdbqt(result.content);
+                    } catch (e) {
+                        console.warn(`Conversion failed for ${id}, using raw PDB`, e);
+                    }
+
                     newMols.push({
                         id: `rec-pdb-${id}`,
-                        name: `${id}.pdb`,
-                        content: result.content,
+                        name: `${id}.pdbqt`,
+                        content: pdbqt,
                         source: 'pdb'
                     });
                 }
@@ -235,6 +265,7 @@ export function BatchPanel() {
                     const blindBox = calculateBlindDockingBox(job.receptorContent);
                     jobParams = {
                         ...params, // Keep other params like exhaustiveness
+                        dockingEngine: dockingEngine, // Pass selected engine
                         ...blindBox // Override box
                     };
                 }

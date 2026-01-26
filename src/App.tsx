@@ -3,7 +3,6 @@ import { useDockingStore } from './store/dockingStore';
 import { Sidebar } from './ui/components/Sidebar';
 import { PrepPanel } from './ui/components/PrepPanel';
 import { InputPanel } from './ui/components/InputPanel';
-import { ExistingOutputPanel } from './ui/components/ExistingOutputPanel';
 import { RunningPanel } from './ui/components/RunningPanel';
 import { OutputPanel } from './ui/components/OutputPanel';
 import { ProjectPanel } from './ui/components/ProjectPanel';
@@ -49,12 +48,6 @@ function App() {
         return (
           <DraggablePanel title="Batch Docking" width="600px" initialX={60} initialY={80}>
             <BatchPanel />
-          </DraggablePanel>
-        );
-      case 'existing':
-        return (
-          <DraggablePanel title="Load Results" width="400px" initialX={60} initialY={200}>
-            <ExistingOutputPanel />
           </DraggablePanel>
         );
       case 'running':
