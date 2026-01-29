@@ -78,7 +78,7 @@
 }
 
 .input-section {
-    background: var(--bg-highlight);
+    background: var(--bg-panel-professional);
     border-radius: var(--radius-panel);
     padding: 24px;
     border: var(--border-subtle);

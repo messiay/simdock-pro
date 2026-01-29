@@ -6,206 +6,213 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 :root {
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      background & CANVAS (SimDock Biotech - Dark Mode)
      ───────────────────────────────────────────────────────────────────────── */
-  --bg-canvas: #0F172A;
-  /* Slate 900 - Deep Lab Blue */
-  --bg-viewport: #1E293B;
-  /* Slate 800 - Technical Surface */
+   --bg-canvas: #0F172A;
+   /* Slate 900 */
+   --bg-viewport: #1E293B;
+   /* Slate 800 */
 
-  --bg-surface: rgba(15, 23, 42, 0.85);
-  /* Dark Glass */
-  --bg-surface-secondary: #0F172A;
-  --bg-highlight: #334155;
-  /* Slate 700 */
-  --bg-elevated: #1E293B;
-  --bg-modal: #1E293B;
+   /* Professional Matte Surface */
+   --bg-surface: rgba(15, 23, 42, 0.85);
+   /* Restored for Toolbar (Darker) */
+   --bg-surface-secondary: rgba(15, 23, 42, 0.6);
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* NEW: Distinct Professional Panel Gradient */
+   --bg-panel-professional: linear-gradient(145deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.98));
+   --bg-input-professional: rgba(0, 0, 0, 0.4);
+   --border-input-professional: 1px solid rgba(255, 255, 255, 0.15);
+
+   --bg-highlight: #334155;
+   /* Slate 700 */
+   --bg-elevated: #1E293B;
+   --bg-modal: #1E293B;
+
+   /* ─────────────────────────────────────────────────────────────────────────
      ACCENT COLORS — PRECISION BIOTECH
      ───────────────────────────────────────────────────────────────────────── */
-  --accent-primary: #38BDF8;
-  /* Sky 400 - Biotech Blue */
-  --accent-secondary: #818CF8;
-  /* Indigo 400 */
-  --accent-hover: #0EA5E9;
-  /* Sky 500 */
+   --accent-primary: #38BDF8;
+   /* Sky 400 - Biotech Blue */
+   --accent-secondary: #818CF8;
+   /* Indigo 400 */
+   --accent-hover: #0EA5E9;
+   /* Sky 500 */
 
-  --status-warning: #FF9F0A;
-  /* macOS Orange */
-  --status-success: #34C759;
-  /* macOS Green */
-  --status-error: #FF3B30;
-  /* macOS Red */
+   --status-warning: #FF9F0A;
+   /* macOS Orange */
+   --status-success: #34C759;
+   /* macOS Green */
+   --status-error: #FF3B30;
+   /* macOS Red */
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      TEXT HIERARCHY
      ───────────────────────────────────────────────────────────────────────── */
-  --text-primary: #FFFFFF;
-  /* Pure White */
-  --text-secondary: #8A94A6;
-  /* Cool Blue-Gray */
-  --text-disabled: #4B5563;
-  --text-metadata: #5C6575;
-  --text-muted: #6B7589;
-  --text-mono: #A0AABF;
+   --text-primary: #FFFFFF;
+   /* Pure White */
+   --text-secondary: #8A94A6;
+   /* Cool Blue-Gray */
+   --text-disabled: #4B5563;
+   --text-metadata: #5C6575;
+   --text-muted: #6B7589;
+   --text-mono: #A0AABF;
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MOLECULAR COLORS (Muted)
      ───────────────────────────────────────────────────────────────────────── */
-  --mol-carbon: #C0C4CC;
-  --mol-oxygen: #E05D5D;
-  --mol-nitrogen: #5C9CE6;
-  /* Muted Blue (Science only) */
-  --mol-hydrogen: #FFFFFF;
-  --mol-bond-default: #4B5563;
-  --mol-bond-highlight: #007AFF;
-  --mol-selection-glow: rgba(0, 122, 255, 0.4);
-  --mol-docking-ghost: rgba(0, 122, 255, 0.2);
+   --mol-carbon: #C0C4CC;
+   --mol-oxygen: #E05D5D;
+   --mol-nitrogen: #5C9CE6;
+   /* Muted Blue (Science only) */
+   --mol-hydrogen: #FFFFFF;
+   --mol-bond-default: #4B5563;
+   --mol-bond-highlight: #007AFF;
+   --mol-selection-glow: rgba(0, 122, 255, 0.4);
+   --mol-docking-ghost: rgba(0, 122, 255, 0.2);
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      3D VIEWPORT ELEMENTS
      ───────────────────────────────────────────────────────────────────────── */
-  --grid-line: rgba(255, 255, 255, 0.04);
-  --axis-x: #FF3B30;
-  --axis-y: #34C759;
-  /* Standard Green Y */
-  --axis-z: #007AFF;
-  /* Standard Blue Z */
+   --grid-line: rgba(255, 255, 255, 0.04);
+   --axis-x: #FF3B30;
+   --axis-y: #34C759;
+   /* Standard Green Y */
+   --axis-z: #007AFF;
+   /* Standard Blue Z */
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MATERIALS & SHADOWS (Flat Matte)
      ───────────────────────────────────────────────────────────────────────── */
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MATERIALS & SHADOWS (Apple Glass)
      ───────────────────────────────────────────────────────────────────────── */
-  --glass-blur: blur(20px) saturate(140%);
-  --glass-border: rgba(56, 189, 248, 0.15);
-  /* Subtle Blue Border */
-  --border-subtle: 1px solid var(--glass-border);
-  --border-divider: 1px solid rgba(255, 255, 255, 0.08);
+   --glass-blur: blur(20px) saturate(140%);
+   --glass-border: rgba(56, 189, 248, 0.15);
+   /* Subtle Blue Border */
+   --border-subtle: 1px solid var(--glass-border);
+   --border-divider: 1px solid rgba(255, 255, 255, 0.08);
 
-  --shadow-panel: 0px 24px 48px rgba(0, 0, 0, 0.4);
-  /* Deep soft shadow for floating windows */
-  --shadow-elevated: 0px 32px 64px rgba(0, 0, 0, 0.5);
-  --shadow-glow: none;
-  /* Removed Sci-Fi Glow */
+   --shadow-panel: 0px 24px 48px rgba(0, 0, 0, 0.4);
+   /* Deep soft shadow for floating windows */
+   --shadow-elevated: 0px 32px 64px rgba(0, 0, 0, 0.5);
+   --shadow-glow: none;
+   /* Removed Sci-Fi Glow */
 
-  --radius-panel: 18px;
-  /* macOS Window Radius */
-  --radius-sm: 10px;
-  /* Button Radius */
-  --radius-full: 999px;
+   --radius-panel: 18px;
+   /* macOS Window Radius */
+   --radius-sm: 10px;
+   /* Button Radius */
+   --radius-full: 999px;
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      INTERACTION STATES
      ───────────────────────────────────────────────────────────────────────── */
-  --outline-selection: 2px solid var(--accent-primary);
-  --ring-focus: 0 0 0 3px rgba(0, 122, 255, 0.3);
-  --overlay-hover: rgba(255, 255, 255, 0.05);
-  --overlay-active: rgba(0, 122, 255, 0.1);
-  --state-disabled-opacity: 0.5;
+   --outline-selection: 2px solid var(--accent-primary);
+   --ring-focus: 0 0 0 3px rgba(0, 122, 255, 0.3);
+   --overlay-hover: rgba(255, 255, 255, 0.05);
+   --overlay-active: rgba(0, 122, 255, 0.1);
+   --state-disabled-opacity: 0.5;
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      TRANSITIONS
      ───────────────────────────────────────────────────────────────────────── */
-  --transition-theme: none;
-  /* Instant or very fast */
-  --transition-slow: 0.2s ease;
-  --transition-fast: 0.1s ease;
+   --transition-theme: none;
+   /* Instant or very fast */
+   --transition-slow: 0.2s ease;
+   --transition-fast: 0.1s ease;
 }
 
 .light-mode {
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      BACKGROUND & CANVAS (Light Mode Matte)
      ───────────────────────────────────────────────────────────────────────── */
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      BACKGROUND & CANVAS (BioLab - Clinical Mode)
      ───────────────────────────────────────────────────────────────────────── */
-  --bg-canvas: #FFFFFF;
-  --bg-viewport: #F8FAFC;
-  /* Sterile Hospital White/Gray */
-  /* --bg-viewport: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%); */
+   --bg-canvas: #FFFFFF;
+   --bg-viewport: #F8FAFC;
+   /* Sterile Hospital White/Gray */
+   /* --bg-viewport: linear-gradient(180deg, #FFFFFF 0%, #F1F5F9 100%); */
 
-  --bg-surface: rgba(255, 255, 255, 0.95);
-  /* High contrast, clean glass */
-  --bg-surface-secondary: #F1F5F9;
-  --bg-highlight: #E2E8F0;
-  --bg-elevated: #FFFFFF;
-  --bg-modal: #FFFFFF;
+   --bg-surface: rgba(255, 255, 255, 0.95);
+   /* High contrast, clean glass */
+   --bg-surface-secondary: #F1F5F9;
+   --bg-highlight: #E2E8F0;
+   --bg-elevated: #FFFFFF;
+   --bg-modal: #FFFFFF;
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      TEXT HIERARCHY (BioLab)
      ───────────────────────────────────────────────────────────────────────── */
-  --text-primary: #0F172A;
-  /* Slate 900 - Sharp */
-  /* Dark Slate (not black) */
-  --text-secondary: #64748B;
-  /* Slate Gray */
-  --text-disabled: #94A3B8;
-  --text-metadata: #475569;
-  --text-mono: #334155;
+   --text-primary: #0F172A;
+   /* Slate 900 - Sharp */
+   /* Dark Slate (not black) */
+   --text-secondary: #64748B;
+   /* Slate Gray */
+   --text-disabled: #94A3B8;
+   --text-metadata: #475569;
+   --text-mono: #334155;
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MOLECULAR VISUALIZATION (BioLab)
      ───────────────────────────────────────────────────────────────────────── */
-  --mol-carbon: #94A3B8;
-  --mol-oxygen: #EF4444;
-  /* Clinical Red */
-  --mol-nitrogen: #3B82F6;
-  /* Clinical Blue */
-  --mol-hydrogen: #E2E8F0;
-  --mol-bond-default: #CBD5E1;
-  --mol-bond-highlight: #0EA5E9;
-  --mol-selection-glow: rgba(14, 165, 233, 0.4);
-  --mol-docking-ghost: rgba(14, 165, 233, 0.2);
+   --mol-carbon: #94A3B8;
+   --mol-oxygen: #EF4444;
+   /* Clinical Red */
+   --mol-nitrogen: #3B82F6;
+   /* Clinical Blue */
+   --mol-hydrogen: #E2E8F0;
+   --mol-bond-default: #CBD5E1;
+   --mol-bond-highlight: #0EA5E9;
+   --mol-selection-glow: rgba(14, 165, 233, 0.4);
+   --mol-docking-ghost: rgba(14, 165, 233, 0.2);
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      3D VIEWPORT ELEMENTS (Light Mode)
      ───────────────────────────────────────────────────────────────────────── */
-  --grid-line: rgba(0, 0, 0, 0.05);
-  --gizmo-bg: #FFFFFF;
-  --measurement-line: #D9A54C;
-  --measurement-text: #B45309;
+   --grid-line: rgba(0, 0, 0, 0.05);
+   --gizmo-bg: #FFFFFF;
+   --measurement-line: #D9A54C;
+   --measurement-text: #B45309;
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MATERIALS & SHADOWS (Light Mode)
      ───────────────────────────────────────────────────────────────────────── */
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MATERIALS & SHADOWS (Light Mode)
      ───────────────────────────────────────────────────────────────────────── */
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      MATERIALS & SHADOWS (Light Mode - Enhanced Glass)
      ───────────────────────────────────────────────────────────────────────── */
-  --glass-blur: blur(40px) saturate(140%);
-  --glass-border: rgba(148, 163, 184, 0.3);
-  /* Defined border */
+   --glass-blur: blur(40px) saturate(140%);
+   --glass-border: rgba(148, 163, 184, 0.3);
+   /* Defined border */
 
-  --shadow-glass-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
-  --border-subtle: 1px solid var(--glass-border);
-  --border-divider: 1px solid rgba(0, 0, 0, 0.08);
+   --shadow-glass-inset: inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+   --border-subtle: 1px solid var(--glass-border);
+   --border-divider: 1px solid rgba(0, 0, 0, 0.08);
 
-  --shadow-panel:
-    0 20px 40px rgba(0, 0, 0, 0.1),
-    0 0 0 1px rgba(255, 255, 255, 0.6);
-  /* White ring for lightness */
-  --shadow-elevated: 0px 24px 50px rgba(0, 0, 0, 0.18);
-  --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.2);
+   --shadow-panel:
+      0 20px 40px rgba(0, 0, 0, 0.1),
+      0 0 0 1px rgba(255, 255, 255, 0.6);
+   /* White ring for lightness */
+   --shadow-elevated: 0px 24px 50px rgba(0, 0, 0, 0.18);
+   --shadow-glow: 0 0 20px rgba(0, 122, 255, 0.2);
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      INTERACTION STATES (Light Mode)
      ───────────────────────────────────────────────────────────────────────── */
-  --ring-focus: 0 0 0 2px rgba(47, 172, 178, 0.3);
-  --overlay-hover: rgba(0, 0, 0, 0.03);
-  --overlay-active: rgba(47, 172, 178, 0.1);
+   --ring-focus: 0 0 0 2px rgba(47, 172, 178, 0.3);
+   --overlay-hover: rgba(0, 0, 0, 0.03);
+   --overlay-active: rgba(47, 172, 178, 0.1);
 
-  /* ─────────────────────────────────────────────────────────────────────────
+   /* ─────────────────────────────────────────────────────────────────────────
      DEPTH & LIGHTING
      ───────────────────────────────────────────────────────────────────────── */
-  --scene-lighting: #F5F5F0;
-  --bloom-intensity: 0;
-  --ao-strength: 0.3;
+   --scene-lighting: #F5F5F0;
+   --bloom-intensity: 0;
+   --ao-strength: 0.3;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -213,20 +220,20 @@
    ═══════════════════════════════════════════════════════════════════════════ */
 
 * {
-  box-sizing: border-box;
+   box-sizing: border-box;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: var(--bg-canvas);
-  color: var(--text-primary);
-  transition:
-    background-color var(--transition-theme),
-    color var(--transition-theme);
+   margin: 0;
+   padding: 0;
+   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+   -webkit-font-smoothing: antialiased;
+   -moz-osx-font-smoothing: grayscale;
+   background-color: var(--bg-canvas);
+   color: var(--text-primary);
+   transition:
+      background-color var(--transition-theme),
+      color var(--transition-theme);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -234,21 +241,21 @@ body {
    ═══════════════════════════════════════════════════════════════════════════ */
 
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+   width: 8px;
+   height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+   background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--text-disabled);
-  border-radius: 4px;
-  border: 2px solid transparent;
-  background-clip: content-box;
+   background: var(--text-disabled);
+   border-radius: 4px;
+   border: 2px solid transparent;
+   background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background-color: var(--text-secondary);
+   background-color: var(--text-secondary);
 }

@@ -26,7 +26,7 @@
 .workspace-sidebar {
     display: flex;
     flex-direction: column;
-    background: var(--bg-surface);
+    background: var(--bg-panel-professional);
     backdrop-filter: var(--glass-blur);
     z-index: 10;
     border-right: var(--border-divider);

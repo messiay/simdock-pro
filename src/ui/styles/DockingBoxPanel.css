@@ -1,12 +1,13 @@
 .docking-box-panel {
-    background: var(--glass-regular);
-    backdrop-filter: var(--blur-md);
+    background: var(--bg-panel-professional);
+    backdrop-filter: blur(12px);
     border-radius: 16px;
     padding: 20px;
     border: 1px solid var(--glass-border);
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-panel);
     width: 100%;
     box-sizing: border-box;
+    transition: background 0.3s ease;
 }
 
 .panel-title {

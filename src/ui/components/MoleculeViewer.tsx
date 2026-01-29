@@ -263,8 +263,8 @@ export function MoleculeViewer() {
                 viewer.addBox({
                     center: { x: centerX, y: centerY, z: centerZ },
                     dimensions: { w: sizeX, h: sizeY, d: sizeZ },
-                    color: '#00d9ff',
-                    opacity: 0.1
+                    color: theme === 'dark' ? '#00ffff' : '#00d9ff', // Brighter cyan in dark mode
+                    opacity: theme === 'dark' ? 0.6 : 0.45           // Higher opacity in dark mode
                 });
             }
             viewer.render();

@@ -47,7 +47,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    background: var(--bg-highlight);
+    background: var(--bg-panel-professional);
     /* Classy Theme */
     border-radius: var(--radius-panel);
     padding: 24px;
@@ -422,6 +422,7 @@ textarea:focus {
         transform: rotate(360deg);
     }
 }
+
 /* NOTE: Appending new styles for expanded results */
 
 .result-item {
@@ -478,7 +479,8 @@ textarea:focus {
     font-size: 0.8rem;
 }
 
-.mini-table th, .mini-table td {
+.mini-table th,
+.mini-table td {
     padding: 4px 8px;
     text-align: left;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
@@ -495,8 +497,15 @@ textarea:focus {
 }
 
 @keyframes slideDown {
-    from { opacity: 0; transform: translateY(-5px); }
-    to { opacity: 1; transform: translateY(0); }
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 
@@ -580,7 +589,8 @@ textarea:focus {
 }
 
 .pose-row:hover {
-    background: rgba(47, 172, 178, 0.1); /* Teal tint */
+    background: rgba(47, 172, 178, 0.1);
+    /* Teal tint */
 }
 
 .small-view-btn {
@@ -601,7 +611,8 @@ textarea:focus {
 /* Larger Results */
 .results-panel {
     min-height: 250px;
-    max-height: 400px; /* Bigger! */
+    max-height: 400px;
+    /* Bigger! */
     display: flex;
     flex-direction: column;
 }
@@ -654,4 +665,3 @@ textarea:focus {
     background: rgba(255, 255, 255, 0.1);
     color: #fff;
 }
-

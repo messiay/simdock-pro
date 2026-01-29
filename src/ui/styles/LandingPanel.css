@@ -81,7 +81,7 @@
     flex: 1;
     min-width: 300px;
     max-width: 400px;
-    background: rgba(25, 25, 35, 0.6);
+    background: var(--bg-panel-professional);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     padding: 2.5rem;

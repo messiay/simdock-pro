@@ -2,6 +2,9 @@ interface Atom {
     x: number;
     y: number;
     z: number;
+    resName?: string;
+    resNum?: number;
+    chain?: string;
 }
 
 /**
@@ -17,13 +20,103 @@ export function parseAtomsFromPdbqt(pdbqt: string): Atom[] {
             const y = parseFloat(line.substring(38, 46).trim());
             const z = parseFloat(line.substring(46, 54).trim());
 
+            // Extract residue info (standard PDB columns)
+            // ResName: 17-20, Chain: 21, ResNum: 22-26
+            const resName = line.substring(17, 20).trim();
+            const chain = line.substring(21, 22).trim();
+            const resNumStr = line.substring(22, 26).trim();
+            const resNum = parseInt(resNumStr);
+
             if (!isNaN(x) && !isNaN(y) && !isNaN(z)) {
-                atoms.push({ x, y, z });
+                atoms.push({
+                    x, y, z,
+                    resName: resName || undefined,
+                    resNum: !isNaN(resNum) ? resNum : undefined,
+                    chain: chain || undefined
+                });
             }
         }
     }
 
     return atoms;
+}
+
+/**
+ * Calculate gridbox centered on specific residues
+ * Query format examples: "ASP25", "GLU-45", "HIS 57", "A:LYS12"
+ */
+export function calculateGridboxFromResidues(
+    receptorPdbqt: string,
+    query: string,
+    defaultSize: number = 22
+): {
+    centerX: number;
+    centerY: number;
+    centerZ: number;
+    sizeX: number;
+    sizeY: number;
+    sizeZ: number;
+    matchCount: number;
+    error?: string;
+} {
+    const atoms = parseAtomsFromPdbqt(receptorPdbqt);
+
+    if (atoms.length === 0) {
+        return { centerX: 0, centerY: 0, centerZ: 0, sizeX: defaultSize, sizeY: defaultSize, sizeZ: defaultSize, matchCount: 0, error: "No atoms found" };
+    }
+
+    // Parse queries (comma or space separated)
+    const queries = query.toUpperCase().split(/[\s,]+/).filter(q => q.length > 0);
+    const matchedAtoms: Atom[] = [];
+
+    // Simple parser for "RES123" or "A:RES123" patterns
+    for (const q of queries) {
+        // match: (Chain:)?(ResName)?(ResNum)
+        // Regex: Optional Chain, Optional Name, Required Number
+        // Examples: A:ASP25, ASP25, 25, A:25
+        const match = q.match(/^([A-Z]:)?([A-Z]{3})?(\d+)$/);
+
+        if (match) {
+            const qChain = match[1] ? match[1].replace(':', '') : null;
+            const qResName = match[2] || null;
+            const qResNum = parseInt(match[3]);
+
+            const found = atoms.filter(a => {
+                const chainMatch = !qChain || a.chain === qChain;
+                const nameMatch = !qResName || a.resName === qResName;
+                const numMatch = a.resNum === qResNum;
+                return chainMatch && nameMatch && numMatch;
+            });
+
+            matchedAtoms.push(...found);
+        }
+    }
+
+    if (matchedAtoms.length === 0) {
+        return {
+            centerX: 0, centerY: 0, centerZ: 0,
+            sizeX: defaultSize, sizeY: defaultSize, sizeZ: defaultSize,
+            matchCount: 0,
+            error: "No matching residues found"
+        };
+    }
+
+    const bbox = calculateBoundingBox(matchedAtoms);
+
+    // Calculate center
+    const centerX = (bbox.minX + bbox.maxX) / 2;
+    const centerY = (bbox.minY + bbox.maxY) / 2;
+    const centerZ = (bbox.minZ + bbox.maxZ) / 2;
+
+    return {
+        centerX: Math.round(centerX * 100) / 100,
+        centerY: Math.round(centerY * 100) / 100,
+        centerZ: Math.round(centerZ * 100) / 100,
+        sizeX: defaultSize,
+        sizeY: defaultSize,
+        sizeZ: defaultSize,
+        matchCount: matchedAtoms.length
+    };
 }
 
 /**
