@@ -8,6 +8,9 @@ export interface DockingParams {
     sizeY: number;
     sizeZ: number;
 
+    // Engine
+    dockingEngine?: 'vina' | 'smina';
+
     // Vina parameters
     cpus: number;
     exhaustiveness: number;
