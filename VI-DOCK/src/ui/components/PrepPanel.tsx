@@ -3,7 +3,7 @@ import { apiService } from '../../services/apiService';
 import { INPUT_FORMATS, OUTPUT_FORMATS, type SupportedInputFormat, type SupportedOutputFormat } from '../../services/openBabelService';
 import { MolecularPropertiesDisplay } from './MolecularProperties';
 import { useDockingStore } from '../../store/dockingStore';
-import type { MolecularProperties } from '../../services/rdkitService';
+import { rdkitService, type MolecularProperties } from '../../services/rdkitService';
 import {
     TestTube2,
     Dna,
@@ -131,10 +131,26 @@ export function PrepPanel() {
 
         try {
             const result = await apiService.fetchPubChem(pubchemInput.trim());
+            
+            // Calculate properties using RDKit
+            let properties: MolecularProperties | undefined;
+            try {
+                const molData = result.sdf_content || result.pdbqt_content;
+                if (molData) {
+                    const propResult = await rdkitService.processMolblock(molData);
+                    if (propResult.success) {
+                        properties = propResult.properties;
+                    }
+                }
+            } catch (propErr) {
+                console.warn('Could not calculate properties for PubChem ligand:', propErr);
+            }
+
             setPubchemResult({
                 name: result.name || pubchemInput,
                 content: result.pdbqt_content || result.sdf_content,
                 format: result.pdbqt_content ? 'pdbqt' : 'sdf',
+                properties: properties // Store RDKit properties
             });
         } catch (err: any) {
             setPubchemError(err.message || 'Failed to fetch compound');
@@ -395,81 +411,9 @@ export function PrepPanel() {
                             <span>{pubchemResult.name}</span>
                         </div>
 
-                        {/* ADME Properties Display */}
+                        {/* Professional Molecular Properties Display */}
                         {pubchemResult.properties && (
-                            <div className="adme-properties">
-                                <h4>📊 Compound Properties</h4>
-                                <div className="properties-grid">
-                                    {pubchemResult.properties.formula && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">Formula</span>
-                                            <span className="prop-value">{pubchemResult.properties.formula}</span>
-                                        </div>
-                                    )}
-                                    {pubchemResult.properties.molecularWeight && typeof pubchemResult.properties.molecularWeight === 'number' && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">MW</span>
-                                            <span className="prop-value">{pubchemResult.properties.molecularWeight.toFixed(2)} g/mol</span>
-                                        </div>
-                                    )}
-                                    {pubchemResult.properties.adme?.xLogP !== undefined && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">XLogP</span>
-                                            <span className={`prop-value ${pubchemResult.properties.adme.xLogP <= 5 ? 'good' : 'warning'}`}>
-                                                {pubchemResult.properties.adme.xLogP.toFixed(2)}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {pubchemResult.properties.adme?.tpsa !== undefined && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">TPSA</span>
-                                            <span className={`prop-value ${pubchemResult.properties.adme.tpsa <= 140 ? 'good' : 'warning'}`}>
-                                                {pubchemResult.properties.adme.tpsa.toFixed(1)} Å²
-                                            </span>
-                                        </div>
-                                    )}
-                                    {pubchemResult.properties.adme?.hBondDonors !== undefined && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">H-Donors</span>
-                                            <span className={`prop-value ${pubchemResult.properties.adme.hBondDonors <= 5 ? 'good' : 'warning'}`}>
-                                                {pubchemResult.properties.adme.hBondDonors}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {pubchemResult.properties.adme?.hBondAcceptors !== undefined && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">H-Acceptors</span>
-                                            <span className={`prop-value ${pubchemResult.properties.adme.hBondAcceptors <= 10 ? 'good' : 'warning'}`}>
-                                                {pubchemResult.properties.adme.hBondAcceptors}
-                                            </span>
-                                        </div>
-                                    )}
-                                    {pubchemResult.properties.adme?.rotatableBonds !== undefined && (
-                                        <div className="prop-item">
-                                            <span className="prop-label">Rot. Bonds</span>
-                                            <span className={`prop-value ${pubchemResult.properties.adme.rotatableBonds <= 10 ? 'good' : 'warning'}`}>
-                                                {pubchemResult.properties.adme.rotatableBonds}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
-
-                                {/* Lipinski Rule of 5 Check */}
-                                {pubchemResult.properties.adme && pubchemResult.properties.molecularWeight && (
-                                    <div className={`lipinski-badge ${(pubchemResult.properties.molecularWeight <= 500) &&
-                                        (pubchemResult.properties.adme.xLogP === undefined || pubchemResult.properties.adme.xLogP <= 5) &&
-                                        (pubchemResult.properties.adme.hBondDonors === undefined || pubchemResult.properties.adme.hBondDonors <= 5) &&
-                                        (pubchemResult.properties.adme.hBondAcceptors === undefined || pubchemResult.properties.adme.hBondAcceptors <= 10)
-                                        ? 'pass' : 'fail'
-                                        }`}>
-                                        {(pubchemResult.properties.molecularWeight <= 500) &&
-                                            (pubchemResult.properties.adme.xLogP === undefined || pubchemResult.properties.adme.xLogP <= 5) &&
-                                            (pubchemResult.properties.adme.hBondDonors === undefined || pubchemResult.properties.adme.hBondDonors <= 5) &&
-                                            (pubchemResult.properties.adme.hBondAcceptors === undefined || pubchemResult.properties.adme.hBondAcceptors <= 10)
-                                            ? '✓ Lipinski Rule of 5 Compliant' : '⚠ Lipinski Rule of 5 Violation'}
-                                    </div>
-                                )}
-                            </div>
+                            <MolecularPropertiesDisplay properties={pubchemResult.properties} />
                         )}
 
                         <button className="action-btn primary" onClick={handleUsePubchemAsLigand}>

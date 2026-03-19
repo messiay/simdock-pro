@@ -363,6 +363,43 @@ class RDKitService {
             properties: properties || undefined,
         };
     }
+
+    /**
+     * Process Molblock/SDF → Properties
+     */
+    async processMolblock(molblock: string): Promise<{
+        success: boolean;
+        properties?: MolecularProperties;
+        error?: string;
+    }> {
+        await this.initialize();
+        if (!this.rdkit) return { success: false, error: 'RDKit not initialized' };
+
+        let mol = null;
+        try {
+            mol = this.rdkit.get_mol(molblock); // RDKit get_mol often handles molblocks too
+            if (!mol || !mol.is_valid()) {
+                mol?.delete();
+                mol = this.rdkit.get_mol_from_molblock(molblock);
+            }
+
+            if (!mol || !mol.is_valid()) {
+                mol?.delete();
+                return { success: false, error: 'Invalid molecule data' };
+            }
+
+            const properties = this.calculateProperties(mol);
+            this.disposeMolecule(mol);
+
+            return {
+                success: true,
+                properties: properties || undefined,
+            };
+        } catch (error) {
+            if (mol) this.disposeMolecule(mol);
+            return { success: false, error: `Processing error: ${error}` };
+        }
+    }
 }
 
 // Singleton instance

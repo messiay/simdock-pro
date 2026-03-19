@@ -205,14 +205,30 @@
 /* Results Area */
 .import-result {
     margin-top: 16px;
-    padding: 16px;
+    padding: 16px 20px;
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--glass-border);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 16px;
+    gap: 20px;
+    flex-wrap: wrap; /* Allow wrapping on small screens */
+}
+
+.import-result .result-header {
+    flex: 1;
+    min-width: 200px;
+    margin-bottom: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.import-result .action-btn {
+    flex-shrink: 0;
+    white-space: nowrap; /* Ensure button text doesn't wrap */
+    min-width: 160px;
 }
 
 .action-btn.primary {
@@ -526,63 +542,21 @@
     }
 }
 
-/* PubChem Result with ADME Properties */
+/* Professional PubChem Result Layout */
 .pubchem-result {
     flex-direction: column;
     align-items: stretch;
+    gap: 16px;
 }
 
-.adme-properties {
-    margin-top: 12px;
-    padding: 14px;
-    background: rgba(0, 0, 0, 0.25);
-    border-radius: 10px;
-    border: 1px solid var(--border-divider);
+.pubchem-result .result-header {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border-divider);
 }
 
-.adme-properties h4 {
-    margin: 0 0 12px 0;
-    font-size: 0.95rem;
-    color: var(--text-primary);
-    font-weight: 600;
-}
-
-.properties-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-    gap: 10px;
-}
-
-.prop-item {
-    display: flex;
-    flex-direction: column;
-    gap: 3px;
-    padding: 8px 10px;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    text-align: center;
-}
-
-.prop-label {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    font-weight: 600;
-    letter-spacing: 0.5px;
-}
-
-.prop-value {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: var(--text-primary);
-}
-
-.prop-value.good {
-    color: var(--text-primary);
-}
-
-.prop-value.warning {
-    color: var(--text-secondary);
+.pubchem-result .action-btn {
+    margin-top: 8px;
+    width: 100%;
 }
 
 /* Lipinski Badge */
