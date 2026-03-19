@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+dist/
+build/
+.next/
+
+# Project results (Temporary data to exclude from repo)
+VI-DOCK/backend/VI\ DOCK_Projects/
+VI-DOCK/backend/temp/
+results/
+
+# Environment
+.env
+*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Executables (Keeping them for now as user asked for "entire codebase")
+# If the repo size is too large, these should be moved to releases/LFS.
