@@ -98,7 +98,12 @@ class VinaService {
         }
 
         const downloadUrl = apiService.getDownloadUrl(resultData.output_file);
-        const resp = await fetch(downloadUrl);
+        const resp = await fetch(downloadUrl, {
+            headers: { 
+                'Bypass-Tunnel-Reminder': 'true',
+                'ngrok-skip-browser-warning': 'true'
+            }
+        });
         if (!resp.ok) throw new Error("Failed to download output PDBQT");
 
         const outputPdbqt = await resp.text();

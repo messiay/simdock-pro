@@ -16,11 +16,21 @@ export interface JobStatus {
     };
 }
 
+const TUNNEL_HEADERS = {
+    'Bypass-Tunnel-Reminder': 'true',
+    'ngrok-skip-browser-warning': 'true'
+};
+
+const BASE_URL = config.API_BASE_URL.replace(/\/$/, '');
+
 export const apiService = {
     async createProject(name: string) {
-        const response = await fetch(`${config.API_BASE_URL}/projects/`, {
+        const response = await fetch(`${BASE_URL}/projects/`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...TUNNEL_HEADERS 
+            },
             body: JSON.stringify({ name })
         });
         if (!response.ok) throw new Error('Failed to create project');
@@ -31,8 +41,9 @@ export const apiService = {
         const formData = new FormData();
         formData.append('file', file);
 
-        const response = await fetch(`${config.API_BASE_URL}/projects/${projectName}/upload?category=${category}`, {
+        const response = await fetch(`${BASE_URL}/projects/${projectName}/upload?category=${category}`, {
             method: 'POST',
+            headers: { ...TUNNEL_HEADERS },
             body: formData
         });
 
@@ -50,9 +61,12 @@ export const apiService = {
         };
         exhaustiveness: number;
     }) {
-        const response = await fetch(`${config.API_BASE_URL}/docking/${projectName}/dock`, {
+        const response = await fetch(`${BASE_URL}/docking/${projectName}/dock`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...TUNNEL_HEADERS 
+            },
             body: JSON.stringify(configData)
         });
 
@@ -64,7 +78,9 @@ export const apiService = {
     },
 
     async getJobStatus(jobId: string): Promise<JobStatus> {
-        const response = await fetch(`${config.API_BASE_URL}/docking/jobs/${jobId}`);
+        const response = await fetch(`${BASE_URL}/docking/jobs/${jobId}`, {
+            headers: { ...TUNNEL_HEADERS }
+        });
         if (!response.ok) throw new Error('Failed to check job status');
         return response.json();
     },
@@ -74,7 +90,7 @@ export const apiService = {
         if (relativePath.includes(key)) {
             const part = relativePath.split(key)[1];
             const cleanPart = part.replace(/\\/g, '/');
-            return `${config.API_BASE_URL}/files${cleanPart}`;
+            return `${BASE_URL}/files${cleanPart}`;
         }
         return relativePath;
     },
@@ -83,9 +99,12 @@ export const apiService = {
      * Convert PDB to PDBQT using OpenBabel on the backend.
      */
     async convertPdbToPdbqt(pdbContent: string, addHydrogens: boolean = true): Promise<string> {
-        const response = await fetch(`${config.API_BASE_URL}/convert/pdb-to-pdbqt`, {
+        const response = await fetch(`${BASE_URL}/convert/pdb-to-pdbqt`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...TUNNEL_HEADERS 
+            },
             body: JSON.stringify({
                 pdb_content: pdbContent,
                 add_hydrogens: addHydrogens
@@ -105,9 +124,12 @@ export const apiService = {
      * Convert SDF/MOL to PDBQT using OpenBabel on the backend.
      */
     async convertSdfToPdbqt(sdfContent: string, addHydrogens: boolean = true): Promise<string> {
-        const response = await fetch(`${config.API_BASE_URL}/convert/sdf-to-pdbqt`, {
+        const response = await fetch(`${BASE_URL}/convert/sdf-to-pdbqt`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...TUNNEL_HEADERS 
+            },
             body: JSON.stringify({
                 sdf_content: sdfContent,
                 add_hydrogens: addHydrogens
@@ -127,9 +149,12 @@ export const apiService = {
      * Convert SMILES to 3D PDBQT using OpenBabel on the backend.
      */
     async convertSmilesToPdbqt(smiles: string, name: string = 'ligand'): Promise<string> {
-        const response = await fetch(`${config.API_BASE_URL}/convert/smiles-to-pdbqt`, {
+        const response = await fetch(`${BASE_URL}/convert/smiles-to-pdbqt`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 
+                'Content-Type': 'application/json',
+                ...TUNNEL_HEADERS 
+            },
             body: JSON.stringify({ smiles, name })
         });
 
@@ -146,7 +171,9 @@ export const apiService = {
      * Fetch PDB from RCSB via backend.
      */
     async fetchPdb(pdbId: string): Promise<{ pdb_content: string; title: string }> {
-        const response = await fetch(`${config.API_BASE_URL}/fetch/pdb/${pdbId}`);
+        const response = await fetch(`${BASE_URL}/fetch/pdb/${pdbId}`, {
+            headers: { ...TUNNEL_HEADERS }
+        });
 
         if (!response.ok) {
             const err = await response.json();
@@ -161,7 +188,9 @@ export const apiService = {
      * Returns both SDF and PDBQT (if conversion succeeded).
      */
     async fetchPubChem(query: string): Promise<{ sdf_content: string; pdbqt_content: string; name: string }> {
-        const response = await fetch(`${config.API_BASE_URL}/fetch/pubchem/${encodeURIComponent(query)}?convert_to_pdbqt=true`);
+        const response = await fetch(`${config.API_BASE_URL}/fetch/pubchem/${encodeURIComponent(query)}?convert_to_pdbqt=true`, {
+            headers: { ...TUNNEL_HEADERS }
+        });
 
         if (!response.ok) {
             const err = await response.json();
@@ -176,7 +205,8 @@ export const apiService = {
      */
     async findPockets(projectName: string, receptorFile: string): Promise<any[]> {
         const response = await fetch(`${config.API_BASE_URL}/analysis/${projectName}/pockets?receptor_file=${receptorFile}`, {
-            method: 'POST'
+            method: 'POST',
+            headers: { ...TUNNEL_HEADERS }
         });
 
         if (!response.ok) {

@@ -6,14 +6,14 @@ RUN apt-get update && apt-get install -y \
     build-essential \
     libpcre3 \
     libpcre3-dev \
-    libobasis-dev \
+    openbabel \
     && rm -rf /var/lib/apt/lists/*
 
 # Set up work directory
 WORKDIR /app
 
 # Copy requirements and install
-COPY requirements.txt .
+COPY --chown=user requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Download Linux versions of Vina and Smina
@@ -23,10 +23,13 @@ RUN mkdir -p /app/bin && \
     chmod +x /app/bin/vina /app/bin/smina
 
 # Copy the rest of the application
-COPY . .
+COPY --chown=user . .
 
 # Set up user for Hugging Face (Running as user ID 1000)
-RUN useradd -m -u 1000 user
+RUN useradd -m -u 1000 user && \
+    mkdir -p "/app/VI DOCK_Projects" && \
+    chown -R user:user /app
+
 USER user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH \
