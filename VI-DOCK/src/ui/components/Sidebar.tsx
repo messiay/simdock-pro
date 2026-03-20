@@ -77,7 +77,7 @@ export function Sidebar() {
                     </span>
                     <span className="logo-text">VIDocks</span>
                 </h1>
-                <p className="app-subtitle">Browser-Based Molecular Docking</p>
+                <p className="app-subtitle">Powered by High-Performance Computing</p>
             </div>
 
             {/* Scroll Up Button */}
@@ -124,7 +124,6 @@ export function Sidebar() {
                 </button>
                 <div className="footer-info">
                     <p>Powered by AutoDock Vina</p>
-                    <p>WebAssembly Edition</p>
                 </div>
             </div>
         </aside>

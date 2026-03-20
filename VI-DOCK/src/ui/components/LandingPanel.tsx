@@ -15,7 +15,7 @@ export function LandingPanel() {
                         <img src="/logo.png" alt="VIDocks Logo" style={{ width: '100px', height: '100px', objectFit: 'contain' }} />
                     </div>
                     <h1>VIDocks <span className="pro-tag">Pro</span></h1>
-                    <p className="subtitle">Advanced Browser-Based Molecular Docking System</p>
+                    <p className="subtitle">High-Performance Cloud-Powered Molecular Docking</p>
                 </div>
 
                 {/* Mode Selection Cards */}
