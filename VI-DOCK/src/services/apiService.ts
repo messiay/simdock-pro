@@ -188,7 +188,7 @@ export const apiService = {
      * Returns both SDF and PDBQT (if conversion succeeded).
      */
     async fetchPubChem(query: string): Promise<{ sdf_content: string; pdbqt_content: string; name: string }> {
-        const response = await fetch(`${config.API_BASE_URL}/fetch/pubchem/${encodeURIComponent(query)}?convert_to_pdbqt=true`, {
+        const response = await fetch(`${BASE_URL}/fetch/pubchem/${encodeURIComponent(query)}?convert_to_pdbqt=true`, {
             headers: { ...TUNNEL_HEADERS }
         });
 
@@ -204,7 +204,7 @@ export const apiService = {
      * Find potential binding pockets in a receptor.
      */
     async findPockets(projectName: string, receptorFile: string): Promise<any[]> {
-        const response = await fetch(`${config.API_BASE_URL}/analysis/${projectName}/pockets?receptor_file=${receptorFile}`, {
+        const response = await fetch(`${BASE_URL}/analysis/${projectName}/pockets?receptor_file=${receptorFile}`, {
             method: 'POST',
             headers: { ...TUNNEL_HEADERS }
         });
