@@ -80,15 +80,37 @@ else:
 # === 7. Expose it to the Web ===
 print_flush("\n--- DEPLOYMENT COMPLETE ---")
 print_flush("Starting Cloudflare secure tunnel...")
-print_flush("Look for the URL ending in '.trycloudflare.com' below:\n")
 
-# Run Cloudflare pointing to our server
-os.system("./cloudflared-linux-amd64 tunnel --url http://127.0.0.1:8123")
+# Run Cloudflare in the background and save logs
+os.system("nohup ./cloudflared-linux-amd64 tunnel --url http://127.0.0.1:8123 > cloudflare.log 2>&1 &")
+
+time.sleep(5)
+
+# Parse the log to find the URL
+try:
+    with open("cloudflare.log", "r") as f:
+        log_content = f.read()
+        import re
+        url_match = re.search(r'https://[a-zA-Z0-9-]+\.trycloudflare\.com', log_content)
+        if url_match:
+            print_flush("\n" + "="*50)
+            print_flush(f"✅ YOUR PUBLIC API URL IS:\n{url_match.group(0)}")
+            print_flush("="*50)
+            print_flush("\n📋 Copy the link above and paste it into Vercel!")
+        else:
+            print_flush("\n⚠️ Still waiting for URL... Here are the recent logs:")
+            os.system("cat cloudflare.log | tail -n 10")
+except Exception as e:
+    print_flush(f"Error reading Cloudflare log: {e}")
+
+# Keep the cell running so the server stays alive
+while True:
+    time.sleep(60)
 ```
 
 ## 3. How to Connect
-1.  When you run the script, look for the box that says: `https://[random-words].trycloudflare.com`
-2.  **Update Frontend**: Copy that `.trycloudflare.com` URL and set it as your `VITE_API_BASE_URL` in Vercel or your local `.env` file.
+1.  When you run the script, look for the big box that says `✅ YOUR PUBLIC API URL IS:`
+2.  **Update Frontend**: Copy that `.trycloudflare.com` URL (make sure not to include any extra spaces) and set it as your `VITE_API_BASE_URL` in Vercel or your local `.env` file.
 
 ## ⚠️ Important
 Keep the Colab tab open. If the notebook disconnects, the backend will stop. You can reconnect and run the cell again at any time to get a new URL.
