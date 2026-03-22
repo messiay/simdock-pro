@@ -40,15 +40,18 @@ export function OutputPanel() {
 
     const handleDownload = (type: 'pdbqt' | 'pdb' | 'log' | 'all' | 'csv') => {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        
+        // Use only the selected pose if available, otherwise fallback to raw output
+        const selectedLigandContent = result.poses[selectedPose]?.pdbqt || result.rawOutput;
 
         if (type === 'pdbqt' || type === 'all') {
-            const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + result.rawOutput;
+            const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + selectedLigandContent;
             const blob = new Blob([combinedContent], { type: 'text/plain;charset=utf-8' });
             saveAs(blob, `webvina_complex_${timestamp}.pdbqt`);
         }
 
         if (type === 'pdb' || type === 'all') {
-            const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + result.rawOutput;
+            const combinedContent = (receptorFile?.content ? receptorFile.content + '\n' : '') + selectedLigandContent;
             const pdbContent = pdbqtToPdb(combinedContent);
             const blob = new Blob([pdbContent], { type: 'text/plain;charset=utf-8' });
             saveAs(blob, `webvina_complex_${timestamp}.pdb`);
