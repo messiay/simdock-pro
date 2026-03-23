@@ -27,7 +27,8 @@
             "create_no_window": true
         },
         "linux": {
-            "vina": "/app/bin/vina",
+            "vina": "./bin/vina",
+            "smina": "./bin/smina",
             "obabel": "obabel",
             "create_no_window": false
         }

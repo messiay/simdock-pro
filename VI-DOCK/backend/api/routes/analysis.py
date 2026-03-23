@@ -118,4 +118,3 @@ def calculate_gridbox(project_name: str, ligand_file: str, pm = Depends(get_proj
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
