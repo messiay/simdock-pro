@@ -22,9 +22,7 @@ export function InputPanel() {
         addConsoleOutput,
         clearConsoleOutput,
         setResult,
-        setActiveTab,
-        dockingEngine,
-        setDockingEngine
+        setActiveTab
     } = useDockingStore();
 
     const [autoRemoveNonProtein, setAutoRemoveNonProtein] = useState(true);
@@ -173,6 +171,12 @@ export function InputPanel() {
                 </div>
             </div>
 
+            <div className="params-section">
+                <div className="params-grid">
+                    <DockingBoxPanel />
+                </div>
+            </div>
+
             {/* ADVANCED TOGGLE */}
             <div className="advanced-config-toggle">
                 <button 
@@ -180,37 +184,15 @@ export function InputPanel() {
                     onClick={() => setShowAdvanced(!showAdvanced)}
                 >
                     <span className="icon">⚙️</span>
-                    {showAdvanced ? 'Hide Advanced Settings' : 'Customize Engine & Parameters'}
+                    {showAdvanced ? 'Hide Vina Parameters' : 'Show Vina Parameters'}
                     <span className="arrow">{showAdvanced ? '▲' : '▼'}</span>
                 </button>
             </div>
 
             {showAdvanced && (
                 <div className="advanced-sections-container">
-                    {/* ENGINE SELECTION */}
-                    <div className="engine-section">
-                        <div className="section-header">
-                            <h3>Docking Engine</h3>
-                        </div>
-                        <div className="engine-toggle-group">
-                            <button
-                                className={`engine-btn ${dockingEngine === 'vina' ? 'active' : ''}`}
-                                onClick={() => setDockingEngine('vina')}
-                            >
-                                AutoDock Vina
-                            </button>
-                            <button
-                                className={`engine-btn ${dockingEngine === 'smina' ? 'active' : ''}`}
-                                onClick={() => setDockingEngine('smina')}
-                            >
-                                Smina (Vinardo)
-                            </button>
-                        </div>
-                    </div>
-
                     <div className="params-section">
                         <div className="params-grid">
-                            <DockingBoxPanel />
                             <VinaOptionsPanel />
                         </div>
                     </div>
